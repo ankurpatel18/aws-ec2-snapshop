@@ -15,15 +15,76 @@ def filter_instances(project):
 
     return instances
 
-
 @click.group()
+def cli():
+    """Shotty manages snapshot"""
+
+@cli.group('snapshots')
+def snapshots():
+    """Commands for snapshots"""
+
+@snapshots.command('list')
+@click.option('--Project', default=None, help="Only snapshots for project(tag Project:<Name>)")
+def list_snapshots(project):
+    "List EC2 snapshots"
+    instances = filter_instances(project)
+
+    for i in instances:
+        for v in i.volumes.all():
+            for s in v.snapshots.all():
+                print(', '.join((
+                    s.id,
+                    v.id,
+                    i.id,
+                    s.state,
+                    s.progress,
+                    s.start_time.strftime("%c")
+                )))
+    return 
+
+
+@cli.group('volumes')
+def volumes():
+    """Commands for volumes"""
+
+@volumes.command('list')
+@click.option('--Project', default=None, help="Only volumes for project(tag Project:<Name>)")
+def list_volumes(project):
+    "List EC2 volumes"
+    instances = filter_instances(project)
+
+    for i in instances:
+        for v in i.volumes.all():
+            print(', '.join((
+                v.id,
+                i.id,
+                v.state,
+                str(v.size) + 'GiB',
+                v.encrypted and "Encrypted" or "Not Encrypted"            
+            )))
+    return 
+
+@cli.group('instances')
 def instances():
     """Commands for instances"""
+
+@instances.command('snapshot', help="create snapshots of all volumes ")
+@click.option('--Project', default=None, help="Only instances for project(tag Project:<Name>)")
+def create_snapshots(project):
+    "Create snapshots for EC2 instaces"
+
+    instances = filter_instances(project)
+    
+    for i in instances:
+        for v in i.volumes.all():
+            v.create_snapshot(Description="created by python")
+
+    return 
 
 @instances.command('list')
 @click.option('--Project', default=None, help="Only instances for project(tag Project:<Name>)")
 def list_instances(project):
-    "List EC2 instannces"
+    "List EC2 instances"
     
     instances = filter_instances(project)
 
@@ -37,6 +98,8 @@ def list_instances(project):
             i.public_dns_name,
             tags.get('Project', '<no project>')
         )))
+
+    return
 
 @instances.command('stop')
 @click.option('--Project', default=None, help="Only instances for project(tag Project:<Name>)")
@@ -61,6 +124,7 @@ def start_instances(project):
         i.start()
 
 
+
 if __name__ == '__main__':
-    instances()    
+    cli()    
     

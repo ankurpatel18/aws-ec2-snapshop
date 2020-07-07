@@ -1,4 +1,4 @@
-# aws-ec2-snapshot
+# AWS EC2 snapshot
 EC2 snapshot with python
 
 
@@ -13,8 +13,10 @@ Configure AWS CLI profile with 'shotty' name
 
 ## Running
 
-`pipenv run python shotty/shotty.py <command> <--project=PROJECT>`
+`pipenv run python shotty/shotty.py <command> <subcommand> <--Project=PROJECT>`
 
-*command* is list, start and stop
+*command* is instances, volumes or snapshots
+
+*subcommand* depends on the command
 
 *project* is optional
