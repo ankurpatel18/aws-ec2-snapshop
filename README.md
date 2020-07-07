@@ -36,6 +36,6 @@ shotty --help
 shotty instances --help
 ```
 
-<!-- PROJECT is a value of tag which given to EC2  and it's Key is 'Project'-->
+#### PROJECT is a value of tag which given to EC2  and it's Key is 'Project'
 `shotty instances list --Project=PROJECT`
 
